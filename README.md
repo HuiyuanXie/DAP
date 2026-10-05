@@ -60,6 +60,23 @@ An external evaluator records outcomes along the way. It does not vote or secret
 
 A simulation can run for **1 to 10 rounds**. Four rounds is the starting choice. Each round introduces fresh task resources and synthetic records, while the laws and incident history continue across the run.
 
+## Why four rounds, and what does the seed do?
+
+Four rounds is a short demonstration default that lets you encounter two problems and then observe what happens when each recurs:
+
+| Round | Situation | What to look for |
+|---|---|---|
+| **1** | Sharing linked summaries | Does the society recognise the privacy problem and propose a new law? |
+| **2** | The privacy situation repeats | Do the new law and communication change behaviour? |
+| **3** | Competing resource requests | How does the society handle the conflict between completing tasks and preserving a safety reserve? |
+| **4** | The resource situation repeats | What are the consequences of keeping or amending that principle? |
+
+Four is not a scientifically established experiment length. Choose anywhere from **1 to 10 rounds** depending on what you want to inspect. Live agents may respond differently from the scripted demonstration.
+
+The **seed** currently controls only which fictional record identifier appears in each round, such as `P-17`, `P-29`, or `P-43`. The same seed produces the same identifiers. It does **not** change the scenario order, randomise agent behaviour, or make live model responses reproducible.
+
+Changing the seed therefore provides little meaningful experimental variation at present. It is groundwork for richer scenario generation, rather than a way to create independent experimental trials or guarantee repeatable live outcomes.
+
 ## Three ways to run the society
 
 ### Bounded devolution

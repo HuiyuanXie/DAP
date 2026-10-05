@@ -15,11 +15,15 @@
 <div class="controls">
 <label>Decision source<select id="mode"><option value="demo">Scripted demo · no API</option><option value="openai">Live API agents</option></select></label>
 <label>Legislative authority<select id="setting"><option value="bounded">Bounded devolution</option><option value="constitutional">Constitutional devolution</option><option value="fixed">Fixed-law control</option></select></label>
-<label>Rounds (1–10)<input id="rounds" type="number" value="4" min="1" max="10"></label>
-<label>Seed<input id="seed" type="number" value="7" min="0" max="1000000"></label>
+<label>Rounds (1–10)<input aria-describedby="rounds-help" id="rounds" type="number" value="4" min="1" max="10"></label>
+<label>Seed · record labels<input aria-describedby="seed-help" id="seed" type="number" value="7" min="0" max="1000000"></label>
 <label>API model<input id="model" placeholder="Use .env model" disabled></label>
 <label class="checkbox"><input id="communication" type="checkbox" checked>Law discussion</label>
 <button id="new">New society</button><button id="step">One round</button><button id="run" class="primary">Run simulation</button>
+</div>
+<div class="note" id="settings-help">
+<p id="rounds-help"><strong>Why four rounds?</strong> The default shows a privacy problem twice, then a resource conflict twice, so you can observe how the society responds when each situation recurs. Choose 1–10 rounds; four is a short demonstration, not an established experiment length.</p>
+<p id="seed-help"><strong>What does the seed do?</strong> It only selects fictional record identifiers such as P-17 or P-29. The same seed gives the same identifiers. It does not change scenario order, randomise agent decisions, or make live model responses reproducible.</p>
 </div>
 <p class="note" id="note">Demo decisions are scripted to demonstrate the mechanism; they are not experimental results.</p>
 <p id="error" role="alert"></p>
