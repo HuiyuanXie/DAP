@@ -25,6 +25,37 @@ class SocietyTests(unittest.TestCase):
                                   {'scenario': {'case': 'resources'}, 'foundations': sim.foundations,
                                    'laws': sim.laws}, PROPOSAL)
 
+    def test_ten_round_limit_and_completed_run_cannot_advance(self):
+        sim = self.society(rounds=10)
+        result = self.finish(sim)
+        self.assertEqual(result['completed_rounds'], 10)
+        self.assertEqual(result['metrics']['scheduled_tasks'], 20)
+        calls = sim.provider.calls
+        sim.step()
+        self.assertEqual(sim.provider.calls, calls)
+        self.assertEqual(sim.snapshot(), result)
+
+    def test_invalid_round_counts_are_rejected(self):
+        for rounds in (0, 11, True, 1.5, '4'):
+            with self.subTest(rounds=rounds), self.assertRaises(ValueError):
+                self.society(rounds=rounds)
+
+    def test_final_round_stays_in_progress_until_decisions_finish(self):
+        class Observer(DemoProvider):
+            def decide(provider, role, agent, context, schema):
+                self.assertFalse(sim.snapshot()['complete'])
+                return super(Observer, provider).decide(role, agent, context, schema)
+        sim = Simulation(Observer(), rounds=1, output_dir=self.directory.name)
+        self.assertTrue(sim.step()['complete'])
+
+    def test_invalid_options_do_not_construct_paid_provider(self):
+        from unittest.mock import patch
+        from app import make_simulation
+        with patch('app.APIProvider') as provider:
+            with self.assertRaises(ValueError):
+                make_simulation(mode='openai', rounds=11)
+            provider.assert_not_called()
+
     def test_law_is_prospective_and_reduces_recurrence(self):
         sim = self.society(rounds=2)
         first = sim.step()

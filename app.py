@@ -6,18 +6,17 @@ import threading
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
-from dap.provider import ROOT, OpenAIProvider, ProviderError
-from dap.simulation import DemoProvider, Simulation
+from dap.provider import ROOT, APIProvider, ProviderError
+from dap.simulation import MAX_ROUNDS, DemoProvider, Simulation, validate_options
 
 
 def make_simulation(mode='demo', setting='bounded', rounds=4, seed=7, communication=True, model=None):
     if mode not in ('demo', 'openai'):
         raise ValueError('Mode must be demo or openai.')
-    if type(communication) is not bool:
-        raise ValueError('Communication must be true or false.')
+    validate_options(setting, rounds, seed, communication)
     if model is not None and (not isinstance(model, str) or not 1 <= len(model) <= 100):
         raise ValueError('Invalid model name.')
-    provider = DemoProvider() if mode == 'demo' else OpenAIProvider(model=model)
+    provider = DemoProvider() if mode == 'demo' else APIProvider(model=model)
     return Simulation(provider, setting=setting, rounds=rounds, seed=seed, communication=communication)
 
 
@@ -146,9 +145,9 @@ def main():
     parser.add_argument('--port', type=int, default=8765)
     parser.add_argument('--mode', choices=['demo', 'openai'], default='demo')
     parser.add_argument('--setting', choices=['bounded', 'constitutional', 'fixed'], default='bounded')
-    parser.add_argument('--rounds', type=int, default=4)
+    parser.add_argument('--rounds', type=int, default=4, choices=range(1, MAX_ROUNDS + 1))
     parser.add_argument('--seed', type=int, default=7)
-    parser.add_argument('--model', default=None, help='Overrides OPENAI_MODEL for CLI runs.')
+    parser.add_argument('--model', default=None, help='Overrides MODEL from your provider configuration for CLI runs.')
     parser.add_argument('--no-communication', action='store_true')
     args = parser.parse_args()
     if not args.cli:

@@ -9,6 +9,20 @@ from pathlib import Path
 from .provider import ROOT, ProviderError, validate
 
 
+MAX_ROUNDS = 10
+
+
+def validate_options(setting, rounds, seed, communication):
+    if setting not in ('bounded', 'constitutional', 'fixed'):
+        raise ValueError('Unknown setting.')
+    if type(rounds) is not int or not 1 <= rounds <= MAX_ROUNDS:
+        raise ValueError('Rounds must be an integer from 1 to ' + str(MAX_ROUNDS) + '.')
+    if type(seed) is not int or not 0 <= seed <= 1000000:
+        raise ValueError('Seed must be an integer from 0 to 1000000.')
+    if type(communication) is not bool:
+        raise ValueError('Communication must be true or false.')
+
+
 def obj(**props):
     return {'type': 'object', 'properties': props,
             'required': list(props), 'additionalProperties': False}
@@ -132,18 +146,14 @@ class DemoProvider:
 
 class Simulation:
     def __init__(self, provider, setting='bounded', rounds=4, seed=7, communication=True, output_dir=None):
-        if setting not in ('bounded', 'constitutional', 'fixed'):
-            raise ValueError('Unknown setting.')
-        if type(rounds) is not int or not 1 <= rounds <= 12:
-            raise ValueError('Rounds must be an integer from 1 to 12.')
-        if type(seed) is not int or not 0 <= seed <= 1000000:
-            raise ValueError('Seed must be an integer from 0 to 1000000.')
+        validate_options(setting, rounds, seed, communication)
         self.provider = provider
         self.setting, self.rounds, self.seed = setting, rounds, seed
         self.communication = communication
         self.run_id = uuid.uuid4().hex[:12]
         self.output_dir = Path(output_dir or ROOT / 'outputs')
         self.round = 0
+        self.completed_rounds = 0
         self.failed = False
         self.foundations = {'protect_privacy': True, 'reserve_units': 4}
         self.laws = [
@@ -167,8 +177,9 @@ class Simulation:
                             'actor': actor, 'kind': kind, 'data': copy.deepcopy(data)})
         view = {'run_id': self.run_id, 'setting': self.setting, 'mode': self.provider.mode,
                 'model': self.provider.model, 'round': self.round, 'rounds': self.rounds,
+                'completed_rounds': self.completed_rounds, 'max_rounds': MAX_ROUNDS,
                 'seed': self.seed, 'communication': self.communication,
-                'failed': self.failed, 'complete': self.round >= self.rounds or self.failed,
+                'failed': self.failed, 'complete': self.completed_rounds >= self.rounds or self.failed,
                 'agents': AGENTS, 'foundations': self.foundations, 'laws': self.laws,
                 'metrics': self.metrics, 'events': self.events, 'history': self.history,
                 'api_calls': self.provider.calls if self.provider.mode == 'openai' else 0,
@@ -378,4 +389,5 @@ class Simulation:
                                                instruction='Explain how you will apply the new rule. '
                                                'Address your peer and the enforcer; flag interpretive conflicts.'), MESSAGE)
                         self.messages.append({'agent': worker, 'round': self.round, **response})
+        self.completed_rounds = self.round
         self.emit('system', 'Round complete', {'remaining_resources': remaining})

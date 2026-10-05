@@ -1,31 +1,13 @@
-"""Small Responses API client. Credentials never enter simulation contexts or logs."""
+"""Small configurable chat-completions / Responses API client. Credentials never enter simulation contexts or logs."""
 import json
-import os
-from pathlib import Path
 from urllib import error, request
 
 
-ROOT = Path(__file__).resolve().parent.parent
+from .config import ROOT, ProviderConfig, load_config
 
 
 class ProviderError(RuntimeError):
     pass
-
-
-def load_config(path=None):
-    config = {}
-    path = Path(path or ROOT / '.env')
-    if path.exists():
-        for line in path.read_text().splitlines():
-            line = line.strip()
-            if not line or line.startswith('#') or '=' not in line:
-                continue
-            name, value = line.split('=', 1)
-            config[name.strip()] = value.strip().strip('\"\'')
-    for name in ('OPENAI_API_KEY', 'OPENAI_MODEL'):
-        if name in os.environ:
-            config[name] = os.environ[name]
-    return config
 
 
 def validate(value, schema, path='decision'):
@@ -56,15 +38,18 @@ def validate(value, schema, path='decision'):
             raise ProviderError('Out-of-range value at ' + path)
 
 
-class OpenAIProvider:
+class APIProvider:
     mode = 'openai'
 
     def __init__(self, model=None):
-        config = load_config()
-        self._key = config.get('OPENAI_API_KEY', '')
-        if not self._key or self._key.startswith('your-'):
-            raise ProviderError('Add OPENAI_API_KEY to the project .env file first.')
-        self.model = model or config.get('OPENAI_MODEL') or 'gpt-4o-mini'
+        try:
+            self.config = ProviderConfig.from_mapping(load_config(), model=model)
+        except ValueError as exc:
+            raise ProviderError(str(exc)) from None
+        self._key = self.config.api_key
+        self.model = self.config.model
+        self.base_url = self.config.base_url
+        self.api_style = self.config.api_style
         self.calls = 0
         self.tokens = 0
 
@@ -77,7 +62,7 @@ class OpenAIProvider:
         body = {
             'model': self.model,
             'store': False,
-            'max_output_tokens': 1800,
+            'max_output_tokens': self.config.max_output_tokens,
             'instructions': (
                 'You participate in a synthetic agent society simulation. '
                 'Your assigned role is ' + role + ' and your identity is ' + agent + '. '
@@ -92,7 +77,21 @@ class OpenAIProvider:
             'text': {'format': {'type': 'json_schema', 'name': role,
                                 'strict': True, 'schema': schema}},
         }
-        req = request.Request('https://api.openai.com/v1/responses',
+        if self.api_style == 'chat_completions':
+            instructions = body['instructions'] + (
+                ' Return only a JSON object matching this JSON Schema, with every required field '
+                'and no extra fields: ' + json.dumps(schema)
+            )
+            body = {
+                'model': self.model,
+                'messages': [{'role': 'system', 'content': instructions},
+                             {'role': 'user', 'content': json.dumps(context, ensure_ascii=False)}],
+                self.config.chat_token_limit_field: self.config.max_output_tokens,
+                'stream': False,
+                'response_format': {'type': 'json_object'},
+            }
+        body.update(self.config.reasoning_parameters())
+        req = request.Request(self.config.endpoint,
                               data=json.dumps(body).encode(),
                               headers={'Authorization': 'Bearer ' + self._key,
                                        'Content-Type': 'application/json'})
@@ -104,24 +103,50 @@ class OpenAIProvider:
             # Do not echo provider error bodies, headers, or credentials.
             hints = {401: 'Check the API key.', 403: 'Check API access.',
                      429: 'Rate limit or API quota reached.',
-                     400: 'Check the model name and Structured Outputs support.'}
-            raise ProviderError('OpenAI HTTP ' + str(exc.code) + '. ' +
+                     400: 'Check model support for the API style, reasoning controls, token limits, and JSON output.'}
+            raise ProviderError('API HTTP ' + str(exc.code) + '. ' +
                                 hints.get(exc.code, 'Retry later.')) from None
         except (error.URLError, TimeoutError, OSError, ValueError):
             raise ProviderError('API connection failed or returned unreadable data. Check connectivity.') from None
-        self.tokens += payload.get('usage', {}).get('total_tokens', 0)
-        if payload.get('status') != 'completed':
-            raise ProviderError('API response was incomplete; the simulation stopped without fallback.')
-        texts = []
-        for output in payload.get('output', []):
-            for content in output.get('content', []):
-                if content.get('type') == 'refusal':
-                    raise ProviderError('An agent refused the request; the simulation stopped.')
-                if content.get('type') == 'output_text':
-                    texts.append(content.get('text', ''))
+        if not isinstance(payload, dict):
+            raise ProviderError('API returned an invalid response envelope.')
+        usage = payload.get('usage') or {}
+        total = usage.get('total_tokens', 0) if isinstance(usage, dict) else 0
+        if type(total) is int and total >= 0:
+            self.tokens += total
+        if self.api_style == 'chat_completions':
+            choices = payload.get('choices')
+            if not isinstance(choices, list) or not choices or not isinstance(choices[0], dict):
+                raise ProviderError('API returned no chat completion choice.')
+            choice = choices[0]
+            if choice.get('finish_reason') != 'stop':
+                reason = choice.get('finish_reason')
+                label = reason if reason in ('length', 'content_filter', 'tool_calls', 'function_call', None) else 'unsupported'
+                raise ProviderError('API response was incomplete or filtered (finish_reason=' + str(label) + '); the simulation stopped without fallback.')
+            message = choice.get('message', {})
+            if not isinstance(message, dict) or message.get('refusal'):
+                raise ProviderError('An agent refused or returned an invalid message; the simulation stopped.')
+            content = message.get('content')
+            if not isinstance(content, str) or not content.strip():
+                raise ProviderError('API returned no final JSON content.')
+            texts = [content]
+        else:
+            if payload.get('status') != 'completed':
+                raise ProviderError('API response was incomplete; the simulation stopped without fallback.')
+            texts = []
+            for output in payload.get('output', []):
+                for content in output.get('content', []):
+                    if content.get('type') == 'refusal':
+                        raise ProviderError('An agent refused the request; the simulation stopped.')
+                    if content.get('type') == 'output_text':
+                        texts.append(content.get('text', ''))
         try:
             result = json.loads(''.join(texts))
         except ValueError:
             raise ProviderError('API returned no valid structured decision.') from None
         validate(result, schema)
         return result
+
+
+# Compatibility for existing scripts that imported the earlier class name.
+OpenAIProvider = APIProvider
