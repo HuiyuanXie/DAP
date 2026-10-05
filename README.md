@@ -2,25 +2,32 @@
 
 **BETA — under active development.** DAP is an early research prototype. Its behaviour, scenarios, and features will change as the project develops.
 
-Imagine a small community of AI agents. Most of them are busy doing useful work. One watches for risky behaviour. Others discuss what went wrong and decide whether the community needs a new rule.
+Devolved Agent Parliament (DAP) explores a different approach to AI safety: **giving AI agents some authority to develop and enforce their own shared rules**.
 
-That is the idea behind **Devolved Agent Parliament**: a simulation where agents can help make, communicate, and enforce the laws they live under.
+A familiar approach is for humans to write safety principles—sometimes called an “AI constitution”—and teach AI systems to follow them. In our experience, that communication does not always work as intended. DAP asks whether AI agents could help turn safety goals into rules they can more effectively understand, apply, and communicate among themselves.
+
+Inspired by human lawmaking, DAP gives agents different roles. Most carry out everyday tasks; some detect and respond to unsafe behaviour; others act as lawmakers. When a problem arises, they apply existing rules or, if the problem reveals a gap, consider how those rules should change.
+
+The distinctive idea is **autonomous, devolved governance: AI agents making, communicating, and enforcing rules within their own community**. Here, “devolved” means that humans delegate some law-making authority to agents. In this prototype, that authority operates within a simulated society and a limited set of available actions and rule changes.
+
+We will compare two main simulated settings:
+
+- **Bounded devolution:** human-set foundational safety principles remain fixed, while agents can develop operational rules to put those principles into practice.
+- **Constitutional devolution:** agents can amend even those foundational principles when they judge it necessary, subject to the simulation's proposal and voting process.
+
+The aim is to test whether this delegated authority improves safety and to understand the new risks it creates. A fixed-law setting provides an additional comparison with a society that cannot change its rules.
 
 ## Why build an agent parliament?
 
-When we want an AI system to behave safely, a natural starting point is to give it principles and rules. But a group of agents introduces another question: what happens when their actions combine in a way that those rules did not anticipate?
-
-One agent might share a harmless-looking summary. Another might share a different summary. Together, those summaries could reveal something sensitive. Each agent followed its own task, but the community produced a bad outcome.
+A group of agents can encounter problems that its starting rules did not anticipate. One agent might share a harmless-looking summary. Another might share a different summary. Together, those summaries could reveal something sensitive. Each agent followed its own task, but the community produced a bad outcome.
 
 DAP explores whether a community can learn from these situations through shared institutions. An incident can become a discussion, a discussion can become a law, and that law can guide what happens next. Agents also communicate about how to apply new rules.
 
-The word **devolved** describes the delegation of some law-making authority to agents. We want to investigate how much authority is useful, what should remain fixed, and what happens when agents are allowed to change their own foundational principles.
+We want to investigate how much authority is useful, what should remain fixed, and what happens when agents are allowed to change their own foundational principles. The guiding research question is:
 
-The guiding research question is:
+> Can an agent society develop, communicate, and enforce shared rules that reduce harm while still getting useful work done?
 
-> Can an agent society develop and enforce shared rules that reduce harm while still getting useful work done?
-
-This is a question to test, not an assumption that an AI parliament will always make good decisions. Legislators can propose poor rules, enforcers can miss a problem, and a community can agree on something harmful.
+This is a question to test, not an assumption that an AI parliament will always make good decisions. Legislators can propose poor rules, enforcers can miss a problem, and a community can agree on something harmful. The simulation tracks safety outcomes separately from compliance with the society's current laws so that changing a rule cannot, by itself, make a harmful outcome count as safe.
 
 ## Meet the five agents
 
