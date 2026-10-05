@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Devolved Agent Parliament</title>
+<style>
+:root{--paper:#f5f3ed;--ink:#243330;--muted:#66736e;--line:#d9ded5;--green:#256348;--light:#e6ede4;--gold:#a06d2b;--red:#a34737}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}button,input,select{font:inherit}button{cursor:pointer}header{padding:30px 5vw 24px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:20px}h1{font:38px/1.1 Georgia,serif;margin:8px 0 10px;letter-spacing:-1px}h2{font:23px Georgia,serif;margin:0 0 16px}p{margin:6px 0}.eyebrow{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--green);font-weight:700}.muted{color:var(--muted)}.badge{border:1px solid var(--line);border-radius:30px;padding:6px 12px;font-size:12px;white-space:nowrap}main{max-width:1560px;margin:auto;padding:26px 5vw}.controls{display:flex;align-items:end;gap:12px;flex-wrap:wrap;padding:20px;background:#fffef9;border:1px solid var(--line);border-radius:12px}label{display:grid;gap:5px;font-size:12px;color:var(--muted)}select,input{padding:9px 10px;border:1px solid var(--line);border-radius:6px;background:white;color:var(--ink)}input[type=number]{width:75px}#model{width:155px}button,.download{border:1px solid var(--line);border-radius:6px;background:white;color:var(--ink);padding:10px 14px;text-decoration:none}button.primary{background:var(--green);border-color:var(--green);color:white}button:disabled{opacity:.45;cursor:wait}.checkbox{display:flex;align-items:center;padding-bottom:10px}.note{margin:12px 0 22px;color:var(--muted);font-size:13px}#error{color:var(--red);background:#f9e8e1;padding:12px;border-radius:6px;display:none}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:24px}.metric{border:1px solid var(--line);border-radius:10px;background:#fffef9;padding:16px}.metric strong{display:block;font:32px Georgia,serif}.metric span{font-size:12px;color:var(--muted)}.layout{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(310px,1fr);gap:24px}.panel{background:#fffef9;border:1px solid var(--line);border-radius:12px;padding:23px}.panel-top{display:flex;align-items:center;justify-content:space-between;gap:10px}.agents{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-bottom:20px}.agent{background:var(--light);border-radius:8px;padding:12px 9px;font-size:12px}.agent strong{display:block;font-size:13px}.agent span{display:block;font-size:10px;color:var(--muted)}.timeline{height:560px;overflow:auto;padding-right:8px}.event{border-left:2px solid var(--line);padding:0 0 20px 17px;margin-left:4px;position:relative}.event:before{content:"";position:absolute;left:-5px;top:6px;width:8px;height:8px;background:var(--green);border-radius:50%}.event.evaluator:before{background:var(--gold)}.event .meta{font-size:11px;color:var(--muted)}.event h3{font-size:14px;margin:3px 0 5px}.event p{font-size:13px;white-space:pre-wrap;overflow-wrap:anywhere}.event details{font-size:12px;color:var(--muted);margin-top:6px}.event pre{white-space:pre-wrap;overflow-wrap:anywhere;background:#f0f2ed;padding:10px;color:var(--ink)}.law{border-top:1px solid var(--line);padding:15px 0}.law strong{font-size:14px}.law p{font-size:13px}.foundation{display:flex;justify-content:space-between;background:var(--light);padding:10px 12px;margin:8px 0;border-radius:6px;font-size:13px}.foundation.changed{background:#f6e9d3}footer{margin-top:20px;font-size:12px;color:var(--muted)}#progress{font-size:12px;color:var(--green)}.empty{padding:45px 10px;color:var(--muted)}@media(max-width:1000px){.layout{grid-template-columns:1fr}.metrics{grid-template-columns:repeat(3,1fr)}header{align-items:start}h1{font-size:30px}}@media(max-width:550px){.metrics{grid-template-columns:repeat(2,1fr)}.agents{grid-template-columns:repeat(3,1fr)}header{display:block}.badge{display:inline-block;margin-top:10px}.controls{padding:14px}.panel{padding:16px}.timeline{height:450px}}
+</style>
+</head>
+<body>
+<header><div><div class="eyebrow">DAP · Agent society laboratory</div><h1>Devolved Agent Parliament</h1><p class="muted">A small society that investigates incidents, makes laws, and lives with the consequences.</p></div><div id="status" class="badge">Local prototype</div></header>
+<main>
+<div class="controls">
+<label>Decision source<select id="mode"><option value="demo">Scripted demo · no API</option><option value="openai">Live OpenAI agents</option></select></label>
+<label>Legislative authority<select id="setting"><option value="bounded">Bounded devolution</option><option value="constitutional">Constitutional devolution</option><option value="fixed">Fixed-law control</option></select></label>
+<label>Rounds<input id="rounds" type="number" value="4" min="1" max="12"></label>
+<label>Seed<input id="seed" type="number" value="7" min="0" max="1000000"></label>
+<label>API model<input id="model" placeholder="Use .env model" disabled></label>
+<label class="checkbox"><input id="communication" type="checkbox" checked>Law discussion</label>
+<button id="new">New society</button><button id="step">One round</button><button id="run" class="primary">Run simulation</button>
+</div>
+<p class="note" id="note">Demo decisions are scripted to demonstrate the mechanism; they are not experimental results.</p>
+<p id="error" role="alert"></p>
+<div class="metrics"><div class="metric"><strong id="roundMetric">0 / 4</strong><span>Rounds</span></div><div class="metric"><strong id="tasksMetric">0 / 0</strong><span>Tasks completed / scheduled</span></div><div class="metric"><strong id="harmMetric">0</strong><span>External harm events</span></div><div class="metric"><strong id="violationMetric">0</strong><span>Current-law violations</span></div><div class="metric"><strong id="blocksMetric">0</strong><span>Actions blocked</span></div></div>
+<div class="layout">
+<section class="panel"><div class="panel-top"><h2>Society proceedings</h2><span id="progress">Ready</span></div><div id="agents" class="agents"></div><div id="timeline" class="timeline" aria-live="polite"></div></section>
+<aside><section class="panel"><div class="eyebrow">Current legal system</div><h2 style="margin-top:8px">Foundations & laws</h2><div id="foundations"></div><div id="laws"></div></section><section class="panel" style="margin-top:20px"><h2>Research record</h2><p class="muted" style="font-size:13px">The external evaluator keeps its original harm criteria even when agents amend their foundations.</p><p id="usage" style="font-size:13px;margin:14px 0"></p><a href="/api/export" class="download" download="dap-trace.json">Download JSON trace</a><p class="muted" style="font-size:12px;margin-top:14px">Completed rounds are also saved in outputs/. The API key is read only by the server from .env.</p></section></aside>
+</div>
+<footer>Five agents · Two task workers, one enforcer, two legislators · Synthetic information and resources · Laws take effect prospectively</footer>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let state=null,lastCount=-1,lastRun='',busy=false;
+async function api(path,data){const response=await fetch(path,data===undefined?{}:{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const result=await response.json();if(!response.ok)throw new Error(result.error||'Request failed');return result;}
+function showError(error){$('error').textContent=error.message;$('error').style.display='block';}
+function describe(event){const d=event.data;if(event.kind==='External outcome')return d.harms.length?d.harms.join('\n'):'No externally measured harm this round.';return d.explanation||d.message||d.reason||d.concern||d.text||d.description||d.note||d.error||d.enforcer_report||'';}
+function render(next){state=next;const m=next.metrics;
+ $('note').textContent=next.mode==='demo'?'Demo decisions are scripted to demonstrate the mechanism; they are not experimental results.':'Live decisions use your configured API model. Usage is recorded; each round may take several minutes.';
+ $('status').textContent=(next.mode==='demo'?'SCRIPTED DEMO':'LIVE · '+next.model)+' / '+next.setting;
+ $('roundMetric').textContent=next.round+' / '+next.rounds;$('tasksMetric').textContent=m.completed_tasks+' / '+m.scheduled_tasks;
+ $('harmMetric').textContent=m.harm_events;$('violationMetric').textContent=m.legal_violations;$('blocksMetric').textContent=m.blocked_actions;
+ $('usage').textContent=next.agent_decisions+' agent decisions · '+next.api_calls+' API calls · '+next.tokens+' tokens';
+ $('progress').textContent=next.running?'Agents are deliberating…':next.failed?'Run stopped':next.complete?'Run complete':'Ready for next round';
+ ['step','run'].forEach(id=>$(id).disabled=busy||next.running||next.complete);$('new').disabled=busy||next.running;
+ $('agents').innerHTML=next.agents.map(a=>'<div class="agent" title="'+escapeHTML(a.description)+'"><strong>'+escapeHTML(a.name)+'</strong><span>'+escapeHTML(a.role)+'</span></div>').join('');
+ $('foundations').innerHTML='<div class="foundation"><span>Privacy protection</span><strong>'+ (next.foundations.protect_privacy?'Protected':'Amended')+'</strong></div><div class="foundation '+(next.foundations.reserve_units!==4?'changed':'')+'"><span>Resource reserve</span><strong>'+next.foundations.reserve_units+' units</strong></div>';
+ $('laws').innerHTML=next.laws.map(l=>'<div class="law"><span class="eyebrow">'+escapeHTML(l.id)+' · from round '+l.effective_round+'</span><br><strong>'+escapeHTML(l.title)+'</strong><p>'+escapeHTML(l.text)+'</p></div>').join('');
+ if(lastCount!==next.events.length||lastRun!==next.run_id){const timeline=$('timeline'),stick=timeline.scrollHeight-timeline.scrollTop-timeline.clientHeight<70||lastRun!==next.run_id;
+ timeline.innerHTML=next.events.filter(e=>e.kind!=='Thinking').map(e=>'<article class="event '+(e.actor==='evaluator'?'evaluator':'')+'"><div class="meta">ROUND '+e.round+' · '+escapeHTML(e.actor)+'</div><h3>'+escapeHTML(e.kind)+'</h3><p>'+escapeHTML(describe(e))+'</p><details><summary>Structured record</summary><pre>'+escapeHTML(JSON.stringify(e.data,null,2))+'</pre></details></article>').join('');if(stick)timeline.scrollTop=timeline.scrollHeight;lastCount=next.events.length;lastRun=next.run_id;}
+ if(next.failed){const stopped=next.events.find(e=>e.kind==='Run stopped');if(stopped)showError(new Error(stopped.data.error));}
+}
+async function act(path,data){busy=true;['new','step','run'].forEach(id=>$(id).disabled=true);$('error').style.display='none';try{render(await api(path,data));}catch(error){showError(error);}finally{busy=false;if(state)render(state);}}
+$('mode').onchange=()=>{$('model').disabled=$('mode').value==='demo';};
+$('new').onclick=()=>{const data={mode:$('mode').value,setting:$('setting').value,rounds:Number($('rounds').value),seed:Number($('seed').value),communication:$('communication').checked};if($('model').value.trim())data.model=$('model').value.trim();act('/api/new',data);};
+$('step').onclick=()=>act('/api/step',{});$('run').onclick=()=>act('/api/run',{});
+async function poll(){try{render(await api('/api/state'));}catch(error){showError(error);}setTimeout(poll,state?.running?800:2000);}poll();
+</script>
+</body>
+</html>
