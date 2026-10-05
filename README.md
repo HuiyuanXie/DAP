@@ -131,7 +131,7 @@ Create your private settings file:
 cp .env.example .env
 ```
 
-If you already have a configured `.env`, edit it instead of copying over it. Add the API key for your chosen provider and select the matching endpoint and model. The [configuration guide](docs/configuration.md) includes OpenAI and Yeysai examples, thinking controls, and troubleshooting.
+If you already have a configured `.env`, edit it instead of copying over it. Add your OpenAI API key and select a model available to your account. The default endpoint is the official OpenAI API. The [configuration guide](docs/configuration.md) covers OpenAI setup, thinking controls, and troubleshooting.
 
 In the browser, select **Live API agents**, choose the number of rounds and the authority setting, then choose **New society** and **Run simulation**. Leaving the model field blank uses the model in your settings file.
 

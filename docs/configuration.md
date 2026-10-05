@@ -18,23 +18,11 @@ REASONING_FORMAT=auto
 MAX_OUTPUT_TOKENS=1800
 ```
 
-### Yeysai / switchable DeepSeek chat
-
-```dotenv
-OPENAI_API_KEY=your-yeysai-key
-BASE_URL=https://yeysai.com/v1
-MODEL=deepseek-v4.1-flash
-API_STYLE=chat_completions
-THINKING=off
-REASONING_FORMAT=thinking
-MAX_OUTPUT_TOKENS=1800
-```
-
-Use the key issued for the destination you select. `API_KEY` is also accepted; `OPENAI_MODEL` and `OPENAI_BASE_URL` are legacy aliases. Generic names take precedence if both forms are present at the same source level. The browser's model field or CLI `--model` overrides `MODEL`.
+Use your OpenAI API key. `API_KEY` is also accepted; `OPENAI_MODEL` and `OPENAI_BASE_URL` are legacy aliases. Generic names take precedence if both forms are present at the same source level. The browser's model field or CLI `--model` overrides `MODEL`.
 
 `BASE_URL` can be an HTTPS API root or a complete endpoint. The matching `/responses` or `/chat/completions` suffix is added once. Endpoint/protocol conflicts are reported locally. Credentials, query parameters, and fragments cannot be embedded in the base URL.
 
-The Responses client uses schema-constrained output via `text.format`. Chat Completions requests a JSON object and validates it locally against the agent schema. Gateway and model support can differ. References: [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses), [Yeysai API](https://doc.yeysai.com/docs/openai-api).
+The Responses client uses schema-constrained output via `text.format`. Chat Completions requests a JSON object and validates it locally against the agent schema. Model support can differ. See [OpenAI Structured Outputs](https://developers.openai.com/api/docs/guides/structured-outputs?api-mode=responses).
 
 ## Thinking controls
 
@@ -44,14 +32,12 @@ The Responses client uses schema-constrained output via `text.format`. Chat Comp
 |---|---|---|---|
 | Responses | `auto` or `reasoning` | `reasoning.effort` = configured effort or `low` | `reasoning.effort=none` |
 | OpenAI-style Chat | `auto` or `reasoning_effort` | `reasoning_effort` = configured effort or `low` | `reasoning_effort=none` |
-| Switchable DeepSeek-style Chat | `thinking` | `thinking.type=enabled`, plus optional configured effort | `thinking.type=disabled` without an effort field |
-| Always-reasoning deployment without API controls | `always_on` | No toggle sent | Local error |
 
-`REASONING_EFFORT` applies while thinking is on. Accepted levels depend on the actual model. Set `THINKING_OFF_SUPPORTED=false` for a model that does not accept fully disabling reasoning; off then fails locally. The client never substitutes positive effort for an off request. For a legacy R1 deployment without a toggle, select `always_on` and `THINKING=default` or `on`.
+`REASONING_EFFORT` applies while thinking is on. Accepted levels depend on the actual model. Set `THINKING_OFF_SUPPORTED=false` for a model that does not accept fully disabling reasoning; off then fails locally. The client never substitutes positive effort for an off request.
 
-`MAX_OUTPUT_TOKENS` controls the response budget, including reasoning where the API counts it. It defaults to 1,800 and accepts 1–65,536, subject to the provider's own limits. Thinking runs may need a larger budget, such as 8,192. OpenAI-style chat uses `max_completion_tokens`; the `thinking` and `always_on` adapters use `max_tokens`.
+`MAX_OUTPUT_TOKENS` controls the response budget, including reasoning where the API counts it. It defaults to 1,800 and accepts 1–65,536, subject to the provider's own limits. Thinking runs may need a larger budget, such as 8,192. OpenAI-style chat uses `max_completion_tokens`.
 
-See [OpenAI reasoning](https://developers.openai.com/api/docs/guides/reasoning) and [DeepSeek thinking](https://api-docs.deepseek.com/zh-cn/guides/thinking_mode/). An adapter requests behaviour; it cannot guarantee that a gateway implements it correctly.
+See [OpenAI reasoning](https://developers.openai.com/api/docs/guides/reasoning) for model-specific support.
 
 ## Commands
 
@@ -71,7 +57,7 @@ python3 app.py --cli --mode demo --no-communication
 python3 app.py --cli --mode openai --rounds 1
 ```
 
-The legacy CLI value `--mode openai` means live API mode, including compatible gateways. Runs are limited to 1–10 rounds in the engine, HTTP API, CLI, and browser.
+The CLI value `--mode openai` selects live API mode. Runs are limited to 1–10 rounds in the engine, HTTP API, CLI, and browser.
 
 A live connectivity check sends one request; the second command also runs one bounded round:
 
