@@ -1,7 +1,5 @@
 # Devolved Agent Parliament (DAP)
 
-**BETA — under active development.** DAP is an early research prototype. Its behaviour, scenarios, and features will change as the project develops.
-
 Devolved Agent Parliament (DAP) explores an alternative approach to AI safety: **giving AI agents some authority to develop and enforce their own shared rules**.
 
 A familiar approach is for humans to write safety principles—sometimes called an “AI constitution”—and teach AI systems to follow them. In our experience, that communication does not always work as intended. DAP asks whether AI agents could help turn safety goals into rules they can more effectively understand, apply, and communicate among themselves.
