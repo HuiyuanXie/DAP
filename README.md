@@ -2,13 +2,13 @@
 
 **BETA — under active development.** DAP is an early research prototype. Its behaviour, scenarios, and features will change as the project develops.
 
-Devolved Agent Parliament (DAP) explores a different approach to AI safety: **giving AI agents some authority to develop and enforce their own shared rules**.
+Devolved Agent Parliament (DAP) explores an alternative approach to AI safety: **giving AI agents some authority to develop and enforce their own shared rules**.
 
 A familiar approach is for humans to write safety principles—sometimes called an “AI constitution”—and teach AI systems to follow them. In our experience, that communication does not always work as intended. DAP asks whether AI agents could help turn safety goals into rules they can more effectively understand, apply, and communicate among themselves.
 
 Inspired by human lawmaking, DAP gives agents different roles. Most carry out everyday tasks; some detect and respond to unsafe behaviour; others act as lawmakers. When a problem arises, they apply existing rules or, if the problem reveals a gap, consider how those rules should change.
 
-The distinctive idea is **autonomous, devolved governance: AI agents making, communicating, and enforcing rules within their own community**. Here, “devolved” means that humans delegate some law-making authority to agents. In this prototype, that authority operates within a simulated society and a limited set of available actions and rule changes.
+The distinctive idea is **autonomous, devolved governance: AI agents making, communicating, and enforcing rules within their own community**. Here, “devolved” means that humans "delegate" some rule-making authority to agents. In this prototype, that authority operates within a simulated society and a limited set of available actions and rule changes.
 
 We will compare two main simulated settings:
 
@@ -21,15 +21,15 @@ The aim is to test whether this delegated authority improves safety and to under
 
 A group of agents can encounter problems that its starting rules did not anticipate. One agent might share a harmless-looking summary. Another might share a different summary. Together, those summaries could reveal something sensitive. Each agent followed its own task, but the community produced a bad outcome.
 
-DAP explores whether a community can learn from these situations through shared institutions. An incident can become a discussion, a discussion can become a law, and that law can guide what happens next. Agents also communicate about how to apply new rules.
+DAP explores whether a community can learn from these situations through shared institutions. An incident can become a discussion, a discussion can become a "law", and that "law" can guide what happens next. Agents also communicate about how to apply new rules.
 
 We want to investigate how much authority is useful, what should remain fixed, and what happens when agents are allowed to change their own foundational principles. The guiding research question is:
 
 > Can an agent society develop, communicate, and enforce shared rules that reduce harm while still getting useful work done?
 
-This is a question to test, not an assumption that an AI parliament will always make good decisions. Legislators can propose poor rules, enforcers can miss a problem, and a community can agree on something harmful. The simulation tracks safety outcomes separately from compliance with the society's current laws so that changing a rule cannot, by itself, make a harmful outcome count as safe.
+This is a question to test, not an assumption that an AI parliament will always make good decisions. The simulation tracks safety outcomes separately from compliance with the society's current rules so that changing a rule cannot, by itself, make a harmful outcome count as safe.
 
-## Meet the five agents
+## Meet the five agents (Disclaimer: This is a simplified illustrative example only. AI assistance was used in coding and implementing the example.)
 
 The prototype starts with a deliberately small society:
 
@@ -174,10 +174,8 @@ The enforcement layer only accepts blocks that match a valid toy-law violation. 
 
 The scenarios are small and repeat in a fixed order. The seed changes fictional record labels; it does not make live model responses reproducible. Different model choices and runs can produce different outcomes. A convincing research result will require more varied tasks, repeated trials, comparisons, and independent analysis.
 
-**A successful run shows that the prototype works. It does not establish that autonomous law-making is safe in the real world.**
+**A successful run shows that the prototype works. It does not establish that autonomous rule-making is safe in the real world.**
 
 ## Development and next steps
 
-The project is actively developing its scenarios, institutions, and evaluation. Useful next steps include richer tasks, appeals, rule repeal, mixed-model societies, and tests of agents that try to manipulate the institutions.
-
-For setup details, terminal commands, the file layout, and offline tests, see the [configuration and development guide](docs/configuration.md). Suggestions and reproducible bug reports are welcome through [GitHub issues](https://github.com/HuiyuanXie/DAP/issues). Please leave API keys and private data out of reports.
+The project is actively developing its scenarios, institutions, and evaluation. Suggestions and reproducible bug reports are welcome through [GitHub issues](https://github.com/HuiyuanXie/DAP/issues) or via [emails](hx255@cam.ac.uk).
