@@ -1,12 +1,14 @@
 # Devolved Agent Parliament (DAP)
 
-Devolved Agent Parliament (DAP) explores an alternative approach to AI safety: **giving AI agents some authority to develop and enforce their own shared rules**.
+Devolved Agent Parliament (DAP) investigates an approach to AI safety that **delegates a degree of authority to AI agents to formulate, revise, and enforce shared rules**.
 
-A familiar approach is for humans to write safety principles—sometimes called an “AI constitution”—and teach AI systems to follow them. In our experience, that communication does not always work as intended. DAP asks whether AI agents could help turn safety goals into rules they can more effectively understand, apply, and communicate among themselves.
+DAP forms part of a broader research agenda we call *law for AI*: drawing on legal principles, institutions, and processes to inform AI governance. Human legal systems provide approaches to regulating behaviour, resolving disputes, and adapting rules to emerging problems. Alongside efforts to align AI behaviour with existing laws and safety standards, DAP explores how the institutional processes of rulemaking, interpretation, enforcement, and amendment might inform the governance of agent communities.
 
-Inspired by human lawmaking, DAP gives agents different roles. Most carry out everyday tasks; some detect and respond to unsafe behaviour; others act as lawmakers. When a problem arises, they apply existing rules or, if the problem reveals a gap, consider how those rules should change.
+The project is motivated by our experience of difficulties in translating human safety instructions into reliable agent behaviour. One familiar approach is to articulate safety principles, sometimes organised as an “AI constitution”, and train or instruct AI systems to follow them. DAP investigates whether granting agents some authority to develop and revise operational rules can help them interpret, apply, and communicate safety requirements more effectively.
 
-The distinctive idea is **autonomous, devolved governance: AI agents making, communicating, and enforcing rules within their own community**. Here, “devolved” means that humans "delegate" some rule-making authority to agents. In this prototype, that authority operates within a simulated society and a limited set of available actions and rule changes.
+Within DAP, agents assume differentiated roles: most perform tasks, some detect and respond to unsafe behaviour, and others deliberate over proposed rules and amendments. When an incident occurs, enforcement agents apply existing rules and report the incident to legislative agents. If the incident reveals a gap or ambiguity, legislative agents consider whether and how to revise the shared rules.
+
+The central feature is **autonomous, devolved governance: agents exercising delegated authority to develop, communicate, and enforce rules within their own community**. Here, *devolution* refers specifically to the transfer of some rulemaking authority from humans to agents. In the prototype, this authority operates within a simulated society with a defined set of actions and permissible rule changes. DAP tests whether such delegation improves safety, evaluated against criteria independent of the agents’ evolving rules, and identifies the conditions under which it introduces additional risks.
 
 We will compare two main simulated settings:
 
